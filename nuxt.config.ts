@@ -3,7 +3,7 @@ import path from "path";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue", "@nuxt/content"],
+  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue", "@nuxt/content", "@nuxt/image"],
   primevue: {
     options: {
       unstyled: true,
