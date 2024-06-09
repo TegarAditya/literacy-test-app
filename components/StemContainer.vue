@@ -68,17 +68,28 @@ onMounted(() => {
     }
 });
 
+const hasNotSureQuestions = () => {
+    return questions.value.some(question => question.notSure);
+};
+
 const confirmSubmit = () => {
+    const confirmationMessage = hasNotSureQuestions()
+        ? 'Beberapa pertanyaan ditandai sebagai “Ragu-ragu”. Apakah Anda yakin ingin mengirimkannya? Anda tidak dapat mengubah jawaban Anda setelahnya.'
+        : 'Apakah Anda yakin ingin mengirimkan tes ini? Anda tidak dapat mengubah jawaban Anda setelahnya.';
+
     confirm.require({
         group: 'templating',
-        header: 'Confirmation',
-        message: 'Apakah Anda yakin untuk menyelesaikan ujian? Anda tidak dapat mengubah jawaban setelah ini',
+        header: 'Konfirmasi Submit',
+        message: confirmationMessage,
         icon: 'pi pi-exclamation-circle',
+        acceptLabel: 'Ya',
+        rejectLabel: 'Tidak',
         //@ts-ignore
         rejectProps: {
             label: 'Cancel',
             icon: 'pi pi-times',
             outlined: true,
+            severity: 'secondary',
             size: 'small'
         },
         acceptProps: {
@@ -88,6 +99,8 @@ const confirmSubmit = () => {
         },
         accept: () => {
             submitAnswers();
+            // @ts-ignore
+            navigateTo('/result');
         },
         reject: () => {
             // Do nothing
@@ -137,8 +150,8 @@ watch(questions, (newQuestions) => {
             <div class="p-5 w-full border-2 rounded-lg h-fit dark:text-white bg-white">
                 <p class="text-lg font-bold">STEM 1</p>
                 <hr class="my-2">
-                <ScrollPanel class="w-full h-56 lg:w-[300px] lg:h-80 lg:max-h-80">
-                    <div class="w-full pr-2 lg:mr-0">
+                <ScrollPanel class="h-56 lg:w-[300px] lg:h-80 lg:max-h-80" style="width: 100%;">
+                    <div class="w-full pr-2 gap-4 flex flex-col lg:mr-0 pb-10">
                         <p>Baterai menggunakan energi dari reaksi kimia untuk memisahkan muatan negatif dan positif di
                             dalam
                             baterai. Proses ini menghasilkan peningkatan energi potensial elektrostatik (muatan listrik
@@ -164,8 +177,7 @@ watch(questions, (newQuestions) => {
                             Marie
                             Ampere tahung 1775-1836.
                         </p>
-                        <Image src="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png"
-                            class="items-center" preview alt="PrimeVue Logo" />
+                        <Image src="/images/Picture1.png" class="items-center" preview alt="PrimeVue Logo" />
                     </div>
                     <ScrollTop target="parent" :threshold="100" icon="pi pi-arrow-up" />
                 </ScrollPanel>
@@ -174,8 +186,14 @@ watch(questions, (newQuestions) => {
             <!-- Questions with Options -->
             <div class="border-2 rounded-lg overflow-hidden w-full h-fit">
                 <Accordion :activeIndex="null">
-                    <AccordionTab v-for="(question, index) in questions" :header="'Soal ' + (index + 1)"
-                        :key="question.id">
+                    <AccordionTab v-for="(question, index) in questions" :key="question.id">
+                        <template #header>
+                            <span class="flex items-center gap-2 w-full">
+                                <span class="font-bold white-space-nowrap">Soal {{ index + 1 }}</span>
+                                <Badge value="Ragu-ragu" class="ml-auto px-2 mr-2" severity="danger"
+                                    v-show="question.notSure" />
+                            </span>
+                        </template>
                         <p class="m-0">{{ question.question }}</p>
                         <div class="py-5 flex flex-col gap-2">
                             <div class="flex items-center bg-gray-50 p-2 rounded-md"
@@ -201,20 +219,20 @@ watch(questions, (newQuestions) => {
         </div>
 
         <!-- Confirm Dialog -->
-        <ConfirmDialog group="templating" class="w-90">
+        <ConfirmDialog group="templating" class="w-full mx-4 max-w-2xl">
             <template #message="slotProps">
                 <div
                     class="flex flex-col w-full items-center gap-3 border-b border-surface-200 dark:border-surface-700">
                     <i :class="slotProps.message.icon" class="text-6xl text-primary"></i>
-                    <p>{{ slotProps.message.message }}</p>
+                    <p class="pb-3 text-center">{{ slotProps.message.message }}</p>
                 </div>
             </template>
         </ConfirmDialog>
 
         <!-- Navigation Buttons -->
         <div class="w-full h-14 bg-blue-400 dark:bg-black fixed z-10 bottom-0 flex justify-center items-center gap-4">
-            <Button :severity="'secondary'" icon="pi pi-angle-left" label="Previous" :disabled="false" raised rounded />
-            <Button :severity="'secondary'" icon="pi pi-angle-right" iconPos="right" label="Next" :disabled="false"
+            <Button :severity="'secondary'" icon="pi pi-angle-left" label="Previous" :disabled="true" raised rounded />
+            <Button :severity="'secondary'" icon="pi pi-angle-right" iconPos="right" label="Next" :disabled="true"
                 raised rounded />
             <Button :severity="'success'" label="Submit" @click="confirmSubmit" raised rounded />
         </div>
