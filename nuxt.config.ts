@@ -13,11 +13,14 @@ export default defineNuxtConfig({
   },
   tailwindcss: {
     config: {
-      // darkMode: "class",
+      darkMode: "class",
       content: [
         "presets/**/*.{js,vue,ts}", // this is optional if you are using @nuxtjs/tailwindcss
       ],
       theme: {
+        fontFamily: {
+          sans: ['"Quicksand"', 'sans-serif']
+        },
         extend: {
           colors: {
             primary: "rgb(var(--primary))",
