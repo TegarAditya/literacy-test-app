@@ -177,7 +177,7 @@ watch(questions, (newQuestions) => {
                             Marie
                             Ampere tahung 1775-1836.
                         </p>
-                        <Image src="/images/Picture1.png" class="items-center" preview alt="PrimeVue Logo" />
+                        <PreviewableImage src="/images/Picture1.png" class="items-center" preview alt="Diadopsi dari buku 'Griffith, The Physics of Everyday Phenomena 6th Edition'" />
                     </div>
                     <ScrollTop target="parent" :threshold="100" icon="pi pi-arrow-up" />
                 </ScrollPanel>
