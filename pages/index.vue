@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Dropdown from 'primevue/dropdown';
-import type { Ref } from 'vue';
 
 const genderOptions = [
   { name: 'Laki-laki', code: 'L' },
@@ -57,7 +52,7 @@ const steps: Step[] = [
   },
   {
     label: 'Jenis Sekolah',
-    model: ref(formData.value.gender),
+    model: ref(formData.value.schoolType),
     placeholder: 'Isi dengan jenis sekolah',
     id: 'schoolType',
     type: 'select',
@@ -83,8 +78,6 @@ const steps: Step[] = [
   }
 ];
 
-const currentStep = ref(0);
-
 // Watch for changes in each step's model and sync to localStorage
 steps.forEach(step => {
   watch(step.model, (newVal) => {
@@ -102,28 +95,16 @@ onMounted(() => {
   });
 });
 
-// Navigation functions
-const nextStep = () => {
-  if (currentStep.value < steps.length - 1) {
-    currentStep.value += 1;
-  }
-};
-
-const prevStep = () => {
-  if (currentStep.value > 0) {
-    currentStep.value -= 1;
-  }
-};
-
 const submitForm = () => {
   // Check if all required fields are filled
-  const incompleteStep = steps.find(step => !step.model);
+  const incompleteStep = steps.find(step => !step.model.value);
   if (incompleteStep) {
-    // Alert user about incomplete form
     alert(`Please fill in ${incompleteStep.label}`);
   } else {
-    // @ts-ignore
-    navigateTo('/otp')
+    // Handle form submission
+    console.log('Form submitted:', formData.value);
+    // Here you can redirect or send formData to an API
+    navigateTo('/otp');
   }
 };
 </script>
@@ -131,35 +112,22 @@ const submitForm = () => {
 <template>
   <div class="flex flex-col items-center justify-center w-screen h-screen dark:bg-gray-900">
     <div class="flex items-center space-x-2 justify-center">
-      <form action="">
+      <form action="" @submit.prevent="submitForm">
         <div class="flex flex-col gap-2 dark:text-white">
-          <label :for="steps[currentStep].id">{{ steps[currentStep].label }}</label>
-          <div class="flex gap-2">
-            <InputText 
-              v-if="steps[currentStep].mode === 'text'" 
-              :id="steps[currentStep].id" 
-              v-model="steps[currentStep].model.value"
-              :aria-describedby="`${steps[currentStep].id}-help`" 
-              :type="steps[currentStep].type"
-              class="w-72" 
-            />
-            <Dropdown 
-              v-if="steps[currentStep].mode === 'select'" 
-              :id="steps[currentStep].id" 
-              v-model="steps[currentStep].model.value"
-              :options="steps[currentStep].options" 
-              optionLabel="name" 
-              placeholder="Pilih"
-              :aria-describedby="`${steps[currentStep].id}-help`" 
-              class="w-72" 
-            />
+          <!-- Render all steps -->
+          <div v-for="step in steps" :key="step.id" class="mb-4">
+            <label :for="step.id">{{ step.label }}</label>
+            <div class="flex gap-2">
+              <InputText v-if="step.mode === 'text'" :id="step.id" v-model="step.model.value"
+                :aria-describedby="`${step.id}-help`" :type="step.type" class="w-72" />
+              <Dropdown v-if="step.mode === 'select'" :id="step.id" v-model="step.model.value" :options="step.options"
+                optionLabel="name" placeholder="Pilih" :aria-describedby="`${step.id}-help`" class="w-72" />
+            </div>
+            <small :id="`${step.id}-help`">{{ step.placeholder }}</small>
           </div>
-          <small :id="`${steps[currentStep].id}-help`">{{ steps[currentStep].placeholder }}</small>
-          <div class="flex justify-between mt-4">
-            <div v-if="currentStep == 0"></div>
-            <Button label="Previous" icon="pi pi-angle-left" @click="prevStep" v-if="currentStep > 0" />
-            <Button label="Next" icon="pi pi-angle-right" @click="nextStep" v-if="currentStep < steps.length - 1" />
-            <Button label="Submit" icon="pi pi-check" v-if="currentStep === steps.length - 1" @click="submitForm"/>
+          <!-- Submit button -->
+          <div class="flex justify-center mt-4">
+            <Button label="Submit" type="submit" class="w-full" />
           </div>
         </div>
       </form>

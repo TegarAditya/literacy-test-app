@@ -17,6 +17,9 @@ defineProps<{
             </template>
             <template #preview="slotProps">
                 <img :src="src" alt="preview" :style="slotProps.style" @click="slotProps.previewCallback" />
+                <div>
+                    <p class="mx-2 lg:text-lg text-center italic text-white absolute bottom-10">{{ alt }}</p>
+                </div>
             </template>
         </Image>
         <p class="text-sm italic text-gray-500">{{ alt }}</p>
