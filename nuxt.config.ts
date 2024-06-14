@@ -3,7 +3,7 @@ import path from "path";
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue", "@nuxt/content", "@nuxt/image"],
+  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue", "@nuxt/image", "@nuxtjs/strapi"],
   primevue: {
     options: {
       unstyled: true,
@@ -64,4 +64,8 @@ export default defineNuxtConfig({
       },
     },
   },
+  strapi: {
+    version: 'v4',
+    prefix: '/api'
+  }
 });
