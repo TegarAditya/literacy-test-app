@@ -1,6 +1,10 @@
 <script setup lang="ts">
 
+const isDark = useDark();
+const toggleDark = useToggle(isDark);
 const confirm = useConfirm();
+
+const blocked = ref(false);
 
 interface Question {
     id: number;
@@ -97,10 +101,9 @@ const confirmSubmit = () => {
             icon: 'pi pi-check',
             size: 'small'
         },
-        accept: () => {
+        accept: async () => {
             submitAnswers();
-            // @ts-ignore
-            navigateTo('/result');
+            await navigateTo('/result');
         },
         reject: () => {
             // Do nothing
@@ -147,7 +150,7 @@ watch(questions, (newQuestions) => {
         <!-- Single Stem Panel -->
         <div class="flex flex-col gap-4 lg:flex-row lg:justify-around lg:w-[1000px]">
             <!-- Stem Text -->
-            <div class="p-5 w-full border-2 rounded-lg h-fit dark:text-white bg-white">
+            <div class="p-5 w-full border-2 rounded-lg h-fit dark:text-white bg-white dark:bg-zinc-900">
                 <p class="text-lg font-bold">STEM 1</p>
                 <hr class="my-2">
                 <ScrollPanel class="h-56 lg:w-[300px] lg:h-80 lg:max-h-80" style="width: 100%;">
@@ -177,7 +180,8 @@ watch(questions, (newQuestions) => {
                             Marie
                             Ampere tahung 1775-1836.
                         </p>
-                        <PreviewableImage src="/images/Picture1.png" class="items-center" preview alt="Diadopsi dari buku 'Griffith, The Physics of Everyday Phenomena 6th Edition'" />
+                        <PreviewableImage src="/images/Picture1.png" class="items-center" preview
+                            alt="Diadopsi dari buku 'Griffith, The Physics of Everyday Phenomena 6th Edition'" />
                     </div>
                     <ScrollTop target="parent" :threshold="100" icon="pi pi-arrow-up" />
                 </ScrollPanel>
@@ -196,7 +200,7 @@ watch(questions, (newQuestions) => {
                         </template>
                         <p class="m-0">{{ question.question }}</p>
                         <div class="py-5 flex flex-col gap-2">
-                            <div class="flex items-center bg-gray-50 p-2 rounded-md"
+                            <div class="flex items-center bg-gray-50 dark:bg-zinc-800 p-2 rounded-md"
                                 @click="() => { question.answer = i; submitAnswers(); }"
                                 v-for="(option, i) in question.options" :key="i">
                                 <RadioButton :inputId="`option-${question.id}-${i}`" :name="'question-' + question.id"
@@ -204,7 +208,7 @@ watch(questions, (newQuestions) => {
                                 <label :for="`option-${question.id}-${i}`" class="ml-2">{{ option }}</label>
                             </div>
                         </div>
-                        <div class="bg-yellow-100 flex items-center justify-center p-1 rounded-lg"
+                        <div class="bg-yellow-100 dark:bg-zinc-700 flex items-center justify-center p-1 rounded-lg"
                             @click="() => { question.notSure = !question.notSure; submitAnswers(); }">
                             <div class="space-x-2 flex items-center">
                                 <Checkbox :inputId="`notSure-${question.id}`" v-model="question.notSure"
@@ -231,8 +235,9 @@ watch(questions, (newQuestions) => {
 
         <!-- Navigation Buttons -->
         <div class="w-full h-14 bg-blue-400 dark:bg-black fixed z-10 bottom-0 flex justify-center items-center gap-4">
-            <Button :severity="'secondary'" icon="pi pi-angle-left" label="Previous" :disabled="true" raised rounded />
-            <Button :severity="'secondary'" icon="pi pi-angle-right" iconPos="right" label="Next" :disabled="true"
+            <Button :severity="'info'" icon="pi pi-info-circle" @click="toggleDark()" rounded />
+            <Button :severity="'secondary'" icon="pi pi-angle-left" label="Previous" :disabled="false" raised rounded />
+            <Button :severity="'secondary'" icon="pi pi-angle-right" iconPos="right" label="Next" :disabled="false"
                 raised rounded />
             <Button :severity="'success'" label="Submit" @click="confirmSubmit" raised rounded />
         </div>

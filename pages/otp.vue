@@ -4,13 +4,12 @@ const corectOtp = '123456';
 const number: Ref<string> = ref('');
 const isIncorrectOtp = ref(false);
 
-const { data: time } = await useFetch('http://worldtimeapi.org/api/timezone/Asia/Jakarta');
+preloadRouteComponents('/test');
 
-watch(number, (value) => {
+watch(number, async (value) => {
     if (value === corectOtp && value.length === 6) {
         isIncorrectOtp.value = false;
-        // @ts-ignore
-        navigateTo('/test')
+        await navigateTo('/test');
     } else if (value?.toString().length === 6) {
         isIncorrectOtp.value = true;
     }

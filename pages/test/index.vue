@@ -1,4 +1,15 @@
 <script setup lang="ts">
+const { isFullscreen, toggle } = useFullscreen();
+
+preloadRouteComponents('/test/app');
+
+async function startTest() {
+    await navigateTo('/test/app');
+
+    if (!isFullscreen.value) {
+        toggle();
+    }
+}
 
 </script>
 
@@ -29,7 +40,7 @@
             </template>
             <template #footer>
                 <div class="flex gap-3 mt-1">
-                    <Button label="Mulai" class="w-full" @click="navigateTo('test/app')"/>
+                    <Button label="Mulai" class="w-full" @click="startTest"/>
                 </div>
             </template>
         </Card>
