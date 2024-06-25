@@ -1,9 +1,21 @@
 import path from "path";
+import tailwindTypography from "@tailwindcss/typography";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@nuxtjs/tailwindcss", "nuxt-primevue", "@nuxt/image", "@nuxtjs/strapi"],
+  runtimeConfig: {
+    apiURL: process.env.API_ENDPOINT,
+    apiToken: process.env.API_TOKEN,
+  },
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "nuxt-primevue",
+    "@nuxt/image",
+    "@nuxtjs/strapi",
+    "@nuxtjs/apollo",
+    "@vueuse/nuxt",
+  ],
   primevue: {
     options: {
       unstyled: true,
@@ -14,12 +26,13 @@ export default defineNuxtConfig({
   tailwindcss: {
     config: {
       darkMode: "class",
+      plugins: [tailwindTypography],
       content: [
-        "presets/**/*.{js,vue,ts}", // this is optional if you are using @nuxtjs/tailwindcss
+        "presets/**/*.{js,vue,ts}",
       ],
       theme: {
         fontFamily: {
-          sans: ['"Quicksand"', 'sans-serif']
+          sans: ['"Quicksand"', "sans-serif"],
         },
         extend: {
           colors: {
@@ -65,7 +78,22 @@ export default defineNuxtConfig({
     },
   },
   strapi: {
-    version: 'v4',
-    prefix: '/api'
-  }
+    version: "v4",
+    prefix: "/api",
+    admin: "/admin",
+    devtools: true,
+    url: "http://localhost:1337",
+  },
+  apollo: {
+    authType: "Bearer",
+    authHeader: "Authorization",
+    tokenStorage: "cookie",
+    clients: {
+      default: {
+        httpEndpoint:
+          process.env.API_ENDPOINT || "http://localhost:1337/graphql",
+        tokenName: "api-token",
+      },
+    },
+  },
 });
