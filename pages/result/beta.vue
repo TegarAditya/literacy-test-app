@@ -14,6 +14,11 @@
 </template>
 
 <script setup lang="ts">
+useSeoMeta({
+    title: 'Hasil Test',
+    description: 'Hasil test yang telah kamu kerjakan',
+})
+
 interface Data {
     questions: Questions;
 }
