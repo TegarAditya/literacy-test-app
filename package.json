@@ -10,19 +10,20 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@chenfengyuan/vue-countdown": "2",
     "@nuxt/content": "^2.12.1",
     "@nuxt/image": "^1.7.0",
     "@nuxtjs/strapi": "^1.12.0",
     "@nuxtjs/tailwindcss": "^6.12.0",
-    "@tailwindcss/typography": "^0.5.13",
     "nuxt": "^3.11.2",
     "primeicons": "^7.0.0",
     "primevue": "^3.52.0",
-    "vue": "^3.4.27",
+    "vue": "3",
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@nuxtjs/apollo": "^5.0.0-alpha.14",
+    "@tailwindcss/typography": "^0.5.13",
     "@vueuse/core": "^10.11.0",
     "@vueuse/nuxt": "^10.11.0",
     "nuxt-primevue": "^3.0.0",
