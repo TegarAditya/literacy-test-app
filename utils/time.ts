@@ -1,3 +1,4 @@
+import { isClient, useStorage } from "@vueuse/core";
 import type { TimeServerData } from "~/types";
 
 /**
@@ -25,6 +26,20 @@ export async function getCurrentTime(): Promise<Date> {
 }
 
 /**
+ * Sets the target time by adding the specified number of minutes to the current time.
+ * @param targetMinute - The number of minutes to add to the current time.
+ * @returns The target time as a Date object.
+ */
+export function setTargetTime(initialDate: string, targetMinute: number): Date {
+  const now = new Date(initialDate);
+  const targetDate = new Date(now.setMinutes(now.getMinutes() + targetMinute));
+
+  const target = useStorage("targetDate", targetDate);
+
+  return target.value;
+}
+
+/**
  * Formats the duration in seconds into a string representation of minutes and seconds.
  * @param seconds - The duration in seconds.
  * @returns The formatted duration string in the format "mm:ss".
@@ -48,7 +63,7 @@ export function calculateTimeDifference(target: Date): string {
   const totalMilliseconds = target.getTime() - now.getTime();
 
   if (totalMilliseconds <= 0) {
-    return "00:00:00"; // Countdown finished
+    return "00:00:00";
   }
 
   const totalSeconds = Math.floor(totalMilliseconds / 1000);
@@ -60,4 +75,15 @@ export function calculateTimeDifference(target: Date): string {
     2,
     "0"
   )}:${String(seconds).padStart(2, "0")}`;
+}
+
+/**
+ * Converts a time string in the format "HH:MM:SS" to the total number of seconds.
+ *
+ * @param timeStr - The time string to convert.
+ * @returns The total number of seconds.
+ */
+export function timeStringToSeconds(timeStr: string) {
+  const [hours, minutes, seconds] = timeStr.split(":").map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
 }
