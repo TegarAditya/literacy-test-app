@@ -1,29 +1,49 @@
 <template>
-  <div>
-    {{ countdown }}
-  </div>
+    <div>
+        {{ countdown }}
+    </div>
 </template>
 
 <script lang="ts" setup>
+import { isClient } from '@vueuse/core';
+import type { Session } from '~/types/session';
+
 const countdown = useState('remaining_time');
-const now = new Date();
-const targetDate = new Date(now.setMinutes(now.getMinutes() + 120)); // Set your target date and time here
+
+const duration: Session = getDuration();
+
+const targetDate = await getTargetDate(duration.attributes.duration);
 
 let interval: ReturnType<typeof setInterval>;
 
 onMounted(() => {
-  countdown.value = calculateTimeDifference(targetDate);
-  interval = setInterval(() => {
     countdown.value = calculateTimeDifference(targetDate);
-    if (countdown.value === '00:00:00') {
-      clearInterval(interval);
-    }
-  }, 1000);
+    interval = setInterval(() => {
+        countdown.value = calculateTimeDifference(targetDate);
+        if (countdown.value === '00:00:00') {
+            clearInterval(interval);
+        }
+    }, 1000);
 });
 
 onUnmounted(() => {
-  clearInterval(interval);
+    clearInterval(interval);
 });
+
+async function getTargetDate(duration: number) {
+    if (isClient && localStorage.getItem('targetDate')) {
+        return new Date(localStorage.getItem('targetDate')!);
+    }
+    const time = new Date().toString();
+
+    return setTargetTime(time, duration);
+}
+
+function getDuration() {
+  if (isClient) {
+   return JSON.parse(localStorage.getItem('sessionData') ?? '')
+  }
+}
 </script>
 
 <style scoped>
