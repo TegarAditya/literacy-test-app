@@ -1,6 +1,4 @@
 <script setup lang="ts">
-
-// Define the structure of an answer
 interface Answer {
     id: number;
     answer: number | null;
@@ -9,21 +7,16 @@ interface Answer {
     notSure: boolean;
 }
 
-// Use refs to hold the counts for correct and incorrect answers
 const correctCount = ref(0);
 const incorrectCount = ref(0);
 
-// Fetch answers from local storage and calculate counts
 onMounted(() => {
-    // Retrieve the stored answers from local storage
     const storedAnswers = localStorage.getItem('answerData');
     if (storedAnswers) {
-        // Parse the JSON string back into an array of Answer objects
         const answers = JSON.parse(storedAnswers) as Answer[];
 
-        // Calculate the number of correct and incorrect answers
-        correctCount.value = answers.filter(answer => answer.isCorrect).length;
-        incorrectCount.value = answers.filter(answer => !answer.isCorrect).length;
+        correctCount.value = answers.filter((answer) => answer.isCorrect).length;
+        incorrectCount.value = answers.filter((answer) => !answer.isCorrect).length;
     }
 });
 </script>
