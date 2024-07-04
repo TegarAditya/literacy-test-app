@@ -34,7 +34,7 @@ const steps: Step[] = [
     {
         label: 'Nama / Inisial',
         model: ref(formData.value.username),
-        placeholder: 'contoh: Ahmad Taufik',
+        placeholder: 'Ahmad Taufik',
         hint: 'Isi dengan nama atau inisial',
         id: 'username',
         type: 'text',
@@ -43,7 +43,7 @@ const steps: Step[] = [
     {
         label: 'Asal Sekolah',
         model: ref(formData.value.school),
-        placeholder: 'contoh: SMAN 1 Surakarta',
+        placeholder: 'SMAN 1 Surakarta',
         hint: 'Isi dengan asal sekolah',
         id: 'school',
         type: 'text',
@@ -52,7 +52,7 @@ const steps: Step[] = [
     {
         label: 'Jenis Sekolah',
         model: ref(formData.value.schoolType),
-        placeholder: 'Pilih saah satu',
+        placeholder: 'Pilih salah satu',
         hint: 'Isi dengan jenis sekolah',
         id: 'schoolType',
         type: 'select',
@@ -62,8 +62,8 @@ const steps: Step[] = [
     {
         label: 'Usia (tahun)',
         model: ref(formData.value.age),
-        placeholder: 'contoh: 17',
-        hint: 'contoh: Isi dengan angka usia saat ini',
+        placeholder: '17',
+        hint: 'Isi dengan angka usia saat ini',
         id: 'age',
         type: 'number',
         mode: 'text',
