@@ -56,7 +56,7 @@
                                                 />
                                             </span>
                                         </template>
-                                        <div class="m-0" v-html="question.attributes.question_field"></div>
+                                        <div class="question m-0" v-html="question.attributes.question_field"></div>
                                         <div class="py-5 flex flex-col gap-2">
                                             <div
                                                 class="flex items-center bg-gray-50 dark:bg-zinc-800 p-2 rounded-md"
@@ -75,7 +75,7 @@
                                                 />
                                                 <label
                                                     :for="option.attributes.code"
-                                                    class="ml-2"
+                                                    class="option ml-2"
                                                     v-html="option.attributes.option"
                                                 ></label>
                                             </div>
@@ -453,6 +453,26 @@ async function submitAnswers() {
     ul {
         list-style-type: disc;
         margin-left: 1rem;
+    }
+}
+
+.question {
+    figure {
+        img {
+            max-height: 10rem;
+        }
+    }
+}
+
+.option {
+    label {
+        display: flex;
+    }
+
+    figure {
+        img {
+            max-height: 5rem;
+        }
     }
 }
 </style>
