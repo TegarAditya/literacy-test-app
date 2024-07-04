@@ -81,6 +81,7 @@ async function resetTest() {
     localStorage.removeItem('formData');
     localStorage.removeItem('isFinish');
     localStorage.removeItem('target');
+    localStorage.removeItem('targetDate');
 
     await navigateTo('/');
 }

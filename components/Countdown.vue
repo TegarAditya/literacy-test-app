@@ -10,13 +10,13 @@ import type { Session } from '~/types/session';
 
 const countdown = useState('remaining_time');
 
-const duration: Session = getDuration();
-
-const targetDate = await getTargetDate(duration.attributes.duration);
-
 let interval: ReturnType<typeof setInterval>;
 
-onMounted(() => {
+onMounted(async () => {
+    const duration: Session = getDuration();
+
+    const targetDate = await getTargetDate(duration.attributes.duration);
+
     countdown.value = calculateTimeDifference(targetDate);
     interval = setInterval(() => {
         countdown.value = calculateTimeDifference(targetDate);
@@ -40,9 +40,9 @@ async function getTargetDate(duration: number) {
 }
 
 function getDuration() {
-  if (isClient) {
-   return JSON.parse(localStorage.getItem('sessionData') ?? '')
-  }
+    if (isClient) {
+        return JSON.parse(localStorage.getItem('sessionData') ?? '');
+    }
 }
 </script>
 
