@@ -1,8 +1,28 @@
 <template>
     <div v-if="shuffledStems">
         <ScrollPanel class="w-full h-[100dvh]" :pt="scrollPanelOptions">
-            <div class="fixed w-full h-screen z-50 flex justify-center items-center" v-show="blocked">
-                <Guide @trigger="blocked = !blocked" />
+            <div class="fixed w-full h-screen z-50 flex justify-center items-center" v-show="isGuideEnabled">
+                <Guide @trigger="isGuideEnabled = !isGuideEnabled" />
+            </div>
+            <div class="fixed w-full h-screen z-50 flex justify-center items-center" v-show="isNavigationEnabled">
+                <StemNavigationWrapper @trigger="isNavigationEnabled = !isNavigationEnabled">
+                    <div class="mr-3">
+                        <div v-for="(stem, sIndex) in shuffledStems">
+                            <Divider>
+                                <span class="text-sm font-bold">Bacaan {{ sIndex + 1 }}</span>
+                            </Divider>
+                            <div class="flex justify-center gap-3 items-center">
+                                <div v-for="(question, qIndex) in stem.attributes.questions.data">
+                                    <Button @click="navigateToIndex(sIndex)" :key="stem.id" rounded>
+                                      <div class="aspect-square">
+                                        {{ qIndex + 1 }}
+                                      </div>
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </StemNavigationWrapper>
             </div>
             <BlockUI :blocked="blocked" :auto-z-index="true" class="z-30">
                 <div class="w-full min-h-screen flex flex-col items-center py-20 px-2">
@@ -17,7 +37,7 @@
                                 <p class="text-lg font-bold">STEM {{ stemIndex + 1 }}</p>
                                 <hr class="my-2" />
                                 <ScrollPanel
-                                    class="h-56 md:h-80 md:max-h-80 lg:w-[300px] lg:min-h-[65dvh]"
+                                    class="h-72 md:h-96 md:max-h-96 lg:w-[300px] lg:min-h-[65dvh]"
                                     style="width: 100%"
                                 >
                                     <div
@@ -103,7 +123,9 @@
             </BlockUI>
         </ScrollPanel>
     </div>
-    <div v-else>
+
+    <!-- Loading Spinner -->
+    <div class="w-full min-h-screen flex justify-center items-center" v-else>
         <ProgressSpinner aria-label="Loading" />
     </div>
 
@@ -120,8 +142,8 @@
     <div
         class="w-full h-14 bg-blue-400 dark:bg-black fixed z-40 bottom-0 md:flex justify-center items-center gap-1 md:gap-4 hidden"
     >
-        <Button :severity="'help'" icon="pi pi-info-circle" @click="blocked = !blocked" rounded />
-        <Button :severity="'info'" icon="pi pi-th-large" @click="blocked = !blocked" rounded />
+        <Button :severity="'help'" icon="pi pi-info-circle" @click="isGuideEnabled = !isGuideEnabled" rounded />
+        <Button :severity="'info'" icon="pi pi-th-large" @click="isNavigationEnabled = !isNavigationEnabled" rounded />
         <Button
             :severity="'secondary'"
             icon="pi pi-angle-left"
@@ -141,32 +163,35 @@
             raised
             rounded
         />
-        <Button
-            :severity="'success'"
-            label="Submit"
-            @click="submitAnswers"
-            :disabled="!enableSubmit"
-            v-tooltip="{
+        <div
+            v-tooltip.top="{
                 value: 'Dibuka saat 5 menit terakhir',
-                showDelay: 300,
-                hideDelay: 300,
+                showDelay: 200,
+                hideDelay: 200,
             }"
-            raised
-            rounded
-        />
+        >
+            <Button
+                :severity="'success'"
+                label="Submit"
+                @click="submitAnswers"
+                :disabled="!enableSubmit"
+                raised
+                rounded
+            />
+        </div>
     </div>
 
     <!-- Navigation Buttons Small -->
     <div
         class="w-full h-14 bg-blue-400 dark:bg-black fixed z-40 bottom-0 flex justify-center items-center gap-2 md:gap-4 md:hidden"
     >
-        <Button :severity="'info'" icon="pi pi-info-circle" @click="blocked = !blocked" rounded />
-        <Button :severity="'info'" icon="pi pi-th-large" @click="blocked = !blocked" rounded />
+        <Button :severity="'help'" icon="pi pi-info-circle" @click="isGuideEnabled = !isGuideEnabled" rounded />
+        <Button :severity="'info'" icon="pi pi-th-large" @click="isNavigationEnabled = !isNavigationEnabled" rounded />
         <Button
             :severity="'secondary'"
             icon="pi pi-angle-left"
             aria-label="Previous"
-            :disabled="page == 0"
+            :disabled="!hasPreviousPage"
             @click="prevPage"
             raised
             rounded
@@ -176,7 +201,7 @@
             icon="pi pi-angle-right"
             iconPos="right"
             aria-label="Next"
-            :disabled="page + 1 == shuffledStems.length"
+            :disabled="!hasNextPage"
             @click="nextPage"
             raised
             rounded
@@ -330,6 +355,11 @@ const scrollPanelOptions: PassThrough<ScrollPanelPassThroughOptions> = {
     barY: 'hidden',
 };
 
+/**
+ * -----------------------------------
+ * PAGE CONTROL
+ * -----------------------------------
+ */
 const page = ref(0);
 const activeQuestion = ref<Question | null>(null);
 
@@ -341,7 +371,50 @@ function prevPage() {
     page.value--;
 }
 
+function hasPreviousPage() {
+    return page.value == 0;
+}
+
+function hasNextPage() {
+    return page.value + 1 == shuffledStems.value.length;
+}
+
+function navigateToIndex(index: number) {
+    page.value = index;
+    isNavigationEnabled.value = false;
+}
+
+/**
+ * -----------------------------------
+ * #### MODAL CONTROL
+ * -----------------------------------
+ */
+
+const isGuideEnabled = ref(false);
+const isNavigationEnabled = ref(false);
 const blocked = ref(false);
+
+watch(isGuideEnabled, (value) => {
+    if (isNavigationEnabled.value) {
+        isNavigationEnabled.value = false;
+    }
+
+    blocked.value = value;
+});
+
+watch(isNavigationEnabled, (value) => {
+    if (isGuideEnabled.value) {
+        isGuideEnabled.value = false;
+    }
+
+    blocked.value = value;
+});
+
+/**
+ * -----------------------------------
+ * MUTATE QUESTION & ANSWER FUNCTION
+ * -----------------------------------
+ */
 
 function getAnswerForQuestion(questionCode: string): Answer {
     return (
@@ -357,12 +430,24 @@ function isQuestionNotSure(questionCode: string): boolean {
     return getAnswerForQuestion(questionCode).isNotSure;
 }
 
+/**
+ * -----------------------------------
+ * UPDATE ACTIVE QUESTION FUNCTION
+ * -----------------------------------
+ */
+
 function updateActiveQuestion(questionCode: string) {
     activeQuestion.value =
         shuffledStems.value
             .flatMap((stem) => stem.attributes.questions.data)
             .find((question) => question.attributes.code === questionCode) || null;
 }
+
+/**
+ * -----------------------------------
+ * SUBMIT FUNCTION
+ * -----------------------------------
+ */
 
 async function submitAnswers() {
     isSubmitting.value = true;
