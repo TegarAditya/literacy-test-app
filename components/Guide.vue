@@ -30,7 +30,7 @@
         </template>
         <template #footer>
             <div class="flex gap-3 mt-1">
-                <Button label="Mengerti" class="w-full" @click="blocked" />
+                <Button label="Mengerti" class="w-full" @click="show" />
             </div>
         </template>
     </Card>
@@ -39,5 +39,5 @@
 <script lang="ts" setup>
 const emit = defineEmits(['trigger']);
 
-const blocked = () => emit('trigger');
+const show = () => emit('trigger');
 </script>
