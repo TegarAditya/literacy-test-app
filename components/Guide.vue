@@ -46,7 +46,17 @@ const { data } = await useAsyncQuery<GuideResponse>(query);
 .guide {
     ol {
         list-style-type: decimal;
-        padding-left: 1em;
+        padding-left: 1.5em;
+        gap: 0.5rem;
+
+        li {
+            text-align: justify;
+        }
+    }
+
+    ul {
+        list-style-type: disc;
+        padding-left: 1.5em;
         gap: 0.5rem;
 
         li {
