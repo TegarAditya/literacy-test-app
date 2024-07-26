@@ -1,17 +1,8 @@
+export interface Main {
+  data: Data;
+}
+
 export interface Data {
-  questions: Questions;
-}
-
-export interface Questions {
-  data: Question[];
-}
-
-export interface Question {
-  attributes: QuestionAttributes;
-}
-
-export interface QuestionAttributes {
-  code: string;
   options: Options;
 }
 
@@ -20,10 +11,10 @@ export interface Options {
 }
 
 export interface Option {
-  attributes: OptionAttributes;
+  id:         string;
+  attributes: Attributes;
 }
 
-export interface OptionAttributes {
+export interface Attributes {
   code: string;
-  is_correct: boolean;
 }

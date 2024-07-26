@@ -44,37 +44,30 @@ onMounted(async () => {
         answers = answersObject.data.map((entry: { option_code: string }) => entry.option_code);
     }
 
-    correctCount.value = answers.filter((answer) => correctOptions.includes(answer)).length;
-
-    incorrectCount.value = answers.length - correctCount.value;
-});
-
-const query = gql`
-    query Question {
-        questions {
-            data {
-                attributes {
-                    code
-                    options(filters: { is_correct: { eq: true } }) {
-                        data {
-                            attributes {
-                                code
-                                is_correct
-                            }
-                        }
+    const query = gql`
+        query {
+            options(filters: { is_correct: { eq: true } }, pagination: { limit: 35 }, sort: "code") {
+                data {
+                    id
+                    attributes {
+                        code
                     }
                 }
             }
         }
-    }
-`;
-const { data } = await useAsyncQuery<Data>(query);
+    `;
+    const { onResult } = useQuery<Data>(query);
 
-const correctOptions: string[] =
-    data?.value?.questions.data
-        .flatMap((question) => question.attributes.options.data)
-        .filter((option) => option.attributes.is_correct)
-        .map((option) => option.attributes.code) ?? [];
+    let correctOptions: string[] = [];
+
+    onResult((value) => {
+        correctOptions = value?.data?.options.data.map((option) => option.attributes.code) ?? [];
+
+        correctCount.value = answers.filter((answer) => correctOptions.includes(answer)).length;
+
+        incorrectCount.value = answers.length - correctCount.value;
+    });
+});
 
 async function resetTest() {
     localStorage.removeItem('answers');

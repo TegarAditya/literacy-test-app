@@ -14,9 +14,9 @@
                             <div class="flex justify-center gap-3 items-center">
                                 <div v-for="(question, qIndex) in stem.attributes.questions.data">
                                     <Button @click="navigateToIndex(sIndex)" :key="stem.id" rounded>
-                                      <div class="aspect-square">
-                                        {{ qIndex + 1 }}
-                                      </div>
+                                        <div class="aspect-square">
+                                            {{ qIndex + 1 }}
+                                        </div>
                                     </Button>
                                 </div>
                             </div>
@@ -452,6 +452,10 @@ function updateActiveQuestion(questionCode: string) {
 async function submitAnswers() {
     isSubmitting.value = true;
 
+    let maxRetries = 10;
+    let attempts = 0;
+    let retryDelay = 5000;
+
     const formData = await JSON.parse(localStorage.getItem('formData') ?? '');
     const userAnswer = await JSON.parse(localStorage.getItem('answers') ?? '');
 
@@ -489,7 +493,17 @@ async function submitAnswers() {
             router.push('/result/beta');
         })
         .catch((error) => {
-            console.error(error);
+            while (attempts < maxRetries) {
+                console.error(`Attempt ${attempts + 1} failed: ${error.message}`);
+                attempts += 1;
+
+                if (attempts < maxRetries) {
+                    console.log(`Retrying in ${retryDelay*attempts/1000}s...`);
+                    new Promise((resolve) => setTimeout(resolve, retryDelay*attempts));
+                } else {
+                    console.error('Max retries reached. Request failed.');
+                }
+            }
         });
 
     useStorage('isFinish', true);
