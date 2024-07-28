@@ -13,7 +13,17 @@
                             </Divider>
                             <div class="flex justify-center gap-3 items-center">
                                 <div v-for="(question, qIndex) in stem.attributes.questions.data">
-                                    <Button @click="navigateToIndex(sIndex)" :key="stem.id" rounded>
+                                    <Button @click="navigateToIndex(sIndex)" :key="`${stem.id}-flagged`" severity="warning" rounded v-if="isQuestionNotSure(question.attributes.code)">
+                                        <div class="aspect-square">
+                                            {{ qIndex + 1 }}
+                                        </div>
+                                    </Button>
+                                    <Button @click="navigateToIndex(sIndex)" :key="`${stem.id}-answered`" severity="success" rounded v-else-if="isQuestionAnswered(question.attributes.code)">
+                                        <div class="aspect-square">
+                                            {{ qIndex + 1 }}
+                                        </div>
+                                    </Button>
+                                    <Button @click="navigateToIndex(sIndex)" :key="stem.id" severity="secondary" rounded v-else>
                                         <div class="aspect-square">
                                             {{ qIndex + 1 }}
                                         </div>
@@ -34,7 +44,7 @@
                         >
                             <!-- Stem Text -->
                             <div class="p-5 w-full border-2 rounded-lg h-fit dark:text-white bg-white dark:bg-zinc-900">
-                                <p class="text-lg font-bold">STEM {{ stemIndex + 1 }}</p>
+                                <p class="text-lg font-bold">Bacaan {{ stemIndex + 1 }}</p>
                                 <hr class="my-2" />
                                 <ScrollPanel
                                     class="h-72 md:h-96 md:max-h-96 lg:w-[300px] lg:min-h-[65dvh]"
@@ -428,6 +438,10 @@ function getAnswerForQuestion(questionCode: string): Answer {
 
 function isQuestionNotSure(questionCode: string): boolean {
     return getAnswerForQuestion(questionCode).isNotSure;
+}
+
+function isQuestionAnswered(questionCode: string): boolean {
+    return getAnswerForQuestion(questionCode).option_code !== null;
 }
 
 /**
