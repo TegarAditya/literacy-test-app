@@ -96,10 +96,10 @@ const { storedValue: formData, setValue: updateFormData } = useLocalStorage('for
  */
 const steps: Step[] = [
     {
-        label: 'Nama / Inisial',
+        label: 'Nama Lengkap',
         model: ref(formData.value.username),
         placeholder: 'Ahmad Taufik',
-        hint: 'Isi dengan nama atau inisial',
+        hint: 'Isi dengan nama lengkap',
         id: 'username',
         type: 'text',
         mode: 'text',
