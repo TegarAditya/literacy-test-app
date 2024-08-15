@@ -10,7 +10,7 @@ export interface Response {
 
 export interface Attributes {
     userData:    UserData;
-    userAnswer:  UserAnswers | null;
+    userAnswer:  UserAnswers;
     createdAt:   Date;
     updatedAt:   Date;
     publishedAt: Date;
@@ -30,19 +30,9 @@ export interface UserAnswer {
 export interface UserData {
     age:        string;
     name:       string;
-    gender:     Gender;
+    gender:     string;
     school:     string;
-    schoolType: SchoolType;
-}
-
-export enum Gender {
-    L = "L",
-    P = "P",
-}
-
-export enum SchoolType {
-    Negeri = "negeri",
-    Swasta = "swasta",
+    schoolType: string;
 }
 
 export interface Meta {

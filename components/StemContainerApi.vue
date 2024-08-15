@@ -301,11 +301,11 @@ const query = gql`
     }
 `;
 
-const { data } = await useAsyncQuery<Data>(query);
+const { loading, onError, onResult, result } = useQuery<Data>(query);
 
 const shuffledStems = computed(() => {
-    if (data.value) {
-        return shuffle([...data.value.stems.data]);
+    if (result.value) {
+        return shuffle([...result.value.stems.data]);
     }
     return [];
 });
