@@ -1,6 +1,6 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  const { apiToken } = useRuntimeConfig();
+  const config = useRuntimeConfig();
   nuxtApp.hook("apollo:auth", ({ token }) => {
-    token.value = apiToken;
+    token.value = config.public.apiToken;
   });
 });

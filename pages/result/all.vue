@@ -9,7 +9,7 @@
                     :rowsPerPageOptions="[5, 10, 20, 50]"
                     tableStyle="min-width: 50rem"
                     paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                    currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                    currentPageReportTemplate="{first} - {last} dari {totalRecords}"
                 >
                     <template #paginatorstart>
                         <Button type="button" icon="pi pi-refresh" text />
@@ -18,6 +18,12 @@
                         <Button type="button" icon="pi pi-download" text @click="downloadCSV" />
                     </template>
                     <Column field="name" header="Name" style="width: 25%"></Column>
+                    <ColumnGroup type="header">
+                        <Row>
+                            <Column field="country.name" header="Country" style="width: 25%"></Column>
+                            <Column field="company" header="Company" style="width: 25%"></Column>
+                        </Row> 
+                    </ColumnGroup>
                     <Column field="country.name" header="Country" style="width: 25%"></Column>
                     <Column field="company" header="Company" style="width: 25%"></Column>
                     <Column field="representative.name" header="Representative" style="width: 25%"></Column>
@@ -28,6 +34,10 @@
 </template>
 
 <script lang="ts" setup>
+import type { Responses, Response } from '~/types/response';
+
+const config = useRuntimeConfig();
+
 const customers = ref([
     {
         name: 'John',
@@ -73,10 +83,24 @@ const customers = ref([
     },
 ]);
 
-// const responses = useState('responses', async () => {
-//     const data = (await getResponseData()).data;
-//     return data;
-// });
+const responses: Ref<Response[] | null> = ref(null);
+
+onMounted(async () => {
+    await $fetch(`${config.public.restApiURL}/responses`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.public.apiToken}`,
+        },
+    })
+        .then((res: any) => {
+            responses.value = res.data;
+            console.log(res.data);
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+});
 
 function downloadCSV() {
     const csv = customers.value.map((customer) => Object.values(customer).join(',')).join('\n');
