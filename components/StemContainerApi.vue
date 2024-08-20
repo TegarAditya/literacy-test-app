@@ -166,6 +166,16 @@
         </div>
     </div>
 
+    <!-- Confirm Dialog -->
+    <ConfirmDialog group="templating" class="w-full mx-4 max-w-2xl">
+        <template #message="slotProps">
+            <div class="flex flex-col w-full items-center gap-3 border-b border-surface-200 dark:border-surface-700">
+                <i :class="slotProps.message.icon" class="text-6xl text-primary"></i>
+                <p class="pb-3 text-center">{{ slotProps.message.message }}</p>
+            </div>
+        </template>
+    </ConfirmDialog>
+
     <!-- Navigation Buttons Full -->
     <div
         class="w-full h-14 bg-blue-400 dark:bg-black fixed z-40 bottom-0 md:flex justify-center items-center gap-1 md:gap-4 hidden"
@@ -201,7 +211,7 @@
             <Button
                 :severity="'success'"
                 label="Submit"
-                @click="submitAnswers"
+                @click="confirmSubmit"
                 :disabled="!enableSubmit"
                 raised
                 rounded
@@ -261,6 +271,7 @@ const config = useRuntimeConfig();
 const router = useRouter();
 
 const time = useState('remaining_time');
+const confirm = useConfirm();
 
 const enableSubmit = ref(false);
 
@@ -466,6 +477,10 @@ function isQuestionAnswered(questionCode: string): boolean {
     return getAnswerForQuestion(questionCode).option_code !== null;
 }
 
+function hasNotSureQuestions(): boolean {
+    return answers.value.data.some((answer) => answer.isNotSure);
+}
+
 /**
  * -----------------------------------
  * UPDATE ACTIVE QUESTION FUNCTION
@@ -478,6 +493,46 @@ function updateActiveQuestion(questionCode: string) {
             .flatMap((stem) => stem.attributes.questions.data)
             .find((question) => question.attributes.code === questionCode) || null;
 }
+
+/**
+ * -----------------------------------
+ * DIALOG FUNCTION
+ * -----------------------------------
+ */
+
+const confirmSubmit = () => {
+    const confirmationMessage = hasNotSureQuestions()
+        ? 'Beberapa pertanyaan ditandai sebagai “Ragu-ragu”. Apakah Anda yakin ingin mengirimkannya? Anda tidak dapat mengubah jawaban Anda setelahnya.'
+        : 'Apakah Anda yakin ingin mengirimkan tes ini? Anda tidak dapat mengubah jawaban Anda setelahnya.';
+
+    confirm.require({
+        group: 'templating',
+        header: 'Konfirmasi Submit',
+        message: confirmationMessage,
+        icon: 'pi pi-exclamation-circle',
+        acceptLabel: 'Ya',
+        rejectLabel: 'Tidak',
+        //@ts-ignore
+        rejectProps: {
+            label: 'Cancel',
+            icon: 'pi pi-times',
+            outlined: true,
+            severity: 'secondary',
+            size: 'small',
+        },
+        acceptProps: {
+            label: 'Save',
+            icon: 'pi pi-check',
+            size: 'small',
+        },
+        accept: async () => {
+            await submitAnswers();
+        },
+        reject: () => {
+            // Do nothing
+        },
+    });
+};
 
 /**
  * -----------------------------------
