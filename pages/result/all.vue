@@ -1,9 +1,9 @@
 <template>
     <div class="flex justify-center items-center w-screen min-h-screen">
         <div class="rounded-lg overflow-hidden shadow-2xl">
-            <div class="card">
+            <div class="card" v-if="responses">
                 <DataTable
-                    :value="customers"
+                    :value="responses.data"
                     paginator
                     :rows="5"
                     :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -17,10 +17,13 @@
                     <template #paginatorend>
                         <Button type="button" icon="pi pi-download" text @click="downloadCSV" />
                     </template>
-                    <Column field="name" header="Name" style="width: 25%"></Column>
-                    <Column field="country.name" header="Country" style="width: 25%"></Column>
-                    <Column field="company" header="Company" style="width: 25%"></Column>
-                    <Column field="representative.name" header="Representative" style="width: 25%"></Column>
+                    <Column field="id" header="ID"></Column>
+                    <Column field="attributes.createdAt" header="Waktu Pengumpulan"></Column>
+                    <Column field="attributes.userData.name" header="Nama"></Column>
+                    <Column field="attributes.userData.age" header="Umur"></Column>
+                    <Column field="attributes.userData.gender" header="Jenis Kelamin"></Column>
+                    <Column field="attributes.userData.school" header="Asal Sekolah"></Column>
+                    <Column field="attributes.userData.schoolType" header="Tipe Sekolah"></Column>
                 </DataTable>
             </div>
         </div>
@@ -30,56 +33,29 @@
 <script lang="ts" setup>
 import type { Responses } from '~/types/response';
 
-const customers = ref([
-    {
-        name: 'John',
-        country: { name: 'USA' },
-        company: 'Company A',
-        representative: { name: 'Alex' },
-    },
-    {
-        name: 'Paul',
-        country: { name: 'Canada' },
-        company: 'Company B',
-        representative: { name: 'Bruce' },
-    },
-    {
-        name: 'George',
-        country: { name: 'Mexico' },
-        company: 'Company C',
-        representative: { name: 'Lee' },
-    },
-]);
+const config = useRuntimeConfig();
 
-onMounted(() => {
-    const query = gql`
-        query {
-            responses {
-                data {
-                    attributes {
-                        userData
-                        userAnswer
-                    }
-                }
-            }
-        }
-    `;
-    const { onResult } = useQuery<Responses>(query);
+const responses = ref<Responses>();
 
-    onResult((value) => {
-        console.log(value);
+onMounted(async () => {
+    responses.value = await $fetch(`${config.public.restApiURL}/responses`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${config.public.apiToken}`,
+        },
     });
 });
 
 function downloadCSV() {
-    const csv = customers.value.map((customer) => Object.values(customer).join(',')).join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'customers.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    // const csv = customers.value.map((customer) => Object.values(customer).join(',')).join('\n');
+    // const blob = new Blob([csv], { type: 'text/csv' });
+    // const url = URL.createObjectURL(blob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = 'customers.csv';
+    // a.click();
+    // URL.revokeObjectURL(url);
 }
 </script>
 
