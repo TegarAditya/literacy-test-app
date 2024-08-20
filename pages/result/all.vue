@@ -3,7 +3,7 @@
         <div class="rounded-lg overflow-hidden shadow-2xl">
             <div class="card" v-if="responses">
                 <DataTable
-                    :value="responses.data"
+                    :value="formattedResponses"
                     paginator
                     :rows="5"
                     :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -24,6 +24,14 @@
                     <Column field="attributes.userData.gender" header="Jenis Kelamin"></Column>
                     <Column field="attributes.userData.school" header="Asal Sekolah"></Column>
                     <Column field="attributes.userData.schoolType" header="Tipe Sekolah"></Column>
+
+                    <!-- Dynamically generate columns for each question -->
+                    <Column
+                        v-for="question in questionCodes"
+                        :key="question"
+                        :field="question"
+                        :header="`Question ${question}`"
+                    ></Column>
                 </DataTable>
             </div>
         </div>
@@ -32,6 +40,7 @@
 
 <script lang="ts" setup>
 import type { Responses } from '~/types/response';
+import { ref, computed } from 'vue';
 
 const config = useRuntimeConfig();
 
@@ -47,15 +56,30 @@ onMounted(async () => {
     });
 });
 
+// Extract question codes dynamically
+const questionCodes = computed(() => {
+    if (!responses.value || !responses.value.data.length) return [];
+    const sampleAnswers = responses.value.data[0].attributes.userAnswer.data;
+    return sampleAnswers.map(answer => answer.question_code);
+});
+
+// Format the responses to include answers with their question codes as keys
+const formattedResponses = computed(() => {
+    if (!responses.value) return [];
+
+    return responses.value.data.map(response => {
+        const formattedResponse: any = { ...response };
+
+        response.attributes.userAnswer.data.forEach(answer => {
+            formattedResponse[answer.question_code] = answer.option_code || 'N/A';
+        });
+
+        return formattedResponse;
+    });
+});
+
 function downloadCSV() {
-    // const csv = customers.value.map((customer) => Object.values(customer).join(',')).join('\n');
-    // const blob = new Blob([csv], { type: 'text/csv' });
-    // const url = URL.createObjectURL(blob);
-    // const a = document.createElement('a');
-    // a.href = url;
-    // a.download = 'customers.csv';
-    // a.click();
-    // URL.revokeObjectURL(url);
+    // CSV download logic goes here
 }
 </script>
 
