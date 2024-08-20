@@ -13,17 +13,35 @@
                             </Divider>
                             <div class="flex justify-center gap-3 items-center">
                                 <div v-for="(question, qIndex) in stem.attributes.questions.data">
-                                    <Button @click="navigateToIndex(sIndex)" :key="`${stem.id}-flagged`" severity="warning" rounded v-if="isQuestionNotSure(question.attributes.code)">
+                                    <Button
+                                        @click="navigateToIndex(sIndex)"
+                                        :key="`${stem.id}-flagged`"
+                                        severity="warning"
+                                        rounded
+                                        v-if="isQuestionNotSure(question.attributes.code)"
+                                    >
                                         <div class="aspect-square">
                                             {{ qIndex + 1 }}
                                         </div>
                                     </Button>
-                                    <Button @click="navigateToIndex(sIndex)" :key="`${stem.id}-answered`" severity="success" rounded v-else-if="isQuestionAnswered(question.attributes.code)">
+                                    <Button
+                                        @click="navigateToIndex(sIndex)"
+                                        :key="`${stem.id}-answered`"
+                                        severity="success"
+                                        rounded
+                                        v-else-if="isQuestionAnswered(question.attributes.code)"
+                                    >
                                         <div class="aspect-square">
                                             {{ qIndex + 1 }}
                                         </div>
                                     </Button>
-                                    <Button @click="navigateToIndex(sIndex)" :key="stem.id" severity="secondary" rounded v-else>
+                                    <Button
+                                        @click="navigateToIndex(sIndex)"
+                                        :key="stem.id"
+                                        severity="secondary"
+                                        rounded
+                                        v-else
+                                    >
                                         <div class="aspect-square">
                                             {{ qIndex + 1 }}
                                         </div>
@@ -237,7 +255,7 @@ import { useStorage } from '@vueuse/core';
 
 import type { ScrollPanelPassThroughOptions } from 'primevue/scrollpanel';
 import type { PassThrough } from 'primevue/ts-helpers';
-import type { Answer, Answers, Data, Question } from '~/types/stem';
+import type { Answer, Answers, Data, Question, Stem } from '~/types/stem';
 
 const config = useRuntimeConfig();
 const router = useRouter();
@@ -303,9 +321,15 @@ const query = gql`
 
 const { data } = await useAsyncQuery<Data>(query);
 
+const useStems = useStorage<Stem[]>('stems', []);
+
 const shuffledStems = computed(() => {
     if (data.value) {
-        return shuffle([...data.value.stems.data]);
+        if (useStems.value.length === 0) {
+            useStems.value = shuffle([...data.value.stems.data]);
+        }
+
+        return useStems.value;
     }
     return [];
 });
@@ -512,8 +536,8 @@ async function submitAnswers() {
                 attempts += 1;
 
                 if (attempts < maxRetries) {
-                    console.log(`Retrying in ${retryDelay*attempts/1000}s...`);
-                    new Promise((resolve) => setTimeout(resolve, retryDelay*attempts));
+                    console.log(`Retrying in ${(retryDelay * attempts) / 1000}s...`);
+                    new Promise((resolve) => setTimeout(resolve, retryDelay * attempts));
                 } else {
                     console.error('Max retries reached. Request failed.');
                 }

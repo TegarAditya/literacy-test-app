@@ -76,6 +76,7 @@ async function resetTest() {
     localStorage.removeItem('target');
     localStorage.removeItem('targetDate');
     localStorage.removeItem('sessionData');
+    localStorage.removeItem('stems');
 
     await navigateTo('/');
 }

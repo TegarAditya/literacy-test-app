@@ -28,6 +28,8 @@
 </template>
 
 <script lang="ts" setup>
+import type { Responses } from '~/types/response';
+
 const customers = ref([
     {
         name: 'John',
@@ -47,36 +49,27 @@ const customers = ref([
         company: 'Company C',
         representative: { name: 'Lee' },
     },
-    {
-        name: 'Ringo',
-        country: { name: 'Brazil' },
-        company: 'Company D',
-        representative: { name: 'Mike' },
-    },
-    {
-        name: 'Paul',
-        country: { name: 'Canada' },
-        company: 'Company B',
-        representative: { name: 'Bruce' },
-    },
-    {
-        name: 'George',
-        country: { name: 'Mexico' },
-        company: 'Company C',
-        representative: { name: 'Lee' },
-    },
-    {
-        name: 'Ringo',
-        country: { name: 'Brazil' },
-        company: 'Company D',
-        representative: { name: 'Mike' },
-    },
 ]);
 
-// const responses = useState('responses', async () => {
-//     const data = (await getResponseData()).data;
-//     return data;
-// });
+onMounted(() => {
+    const query = gql`
+        query {
+            responses {
+                data {
+                    attributes {
+                        userData
+                        userAnswer
+                    }
+                }
+            }
+        }
+    `;
+    const { onResult } = useQuery<Responses>(query);
+
+    onResult((value) => {
+        console.log(value);
+    });
+});
 
 function downloadCSV() {
     const csv = customers.value.map((customer) => Object.values(customer).join(',')).join('\n');
