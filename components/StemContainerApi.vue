@@ -324,14 +324,12 @@ const { data } = await useAsyncQuery<Data>(query);
 const useStems = useStorage<Stem[]>('stems', []);
 
 const shuffledStems = computed(() => {
-    if (data.value) {
-        if (useStems.value.length === 0) {
+    if (useStems.value.length === 0) {
+        if (data.value) {
             useStems.value = shuffle([...data.value.stems.data]);
         }
-
-        return useStems.value;
     }
-    return [];
+    return useStems.value;
 });
 
 const answers = ref<Answers>({ data: [] });

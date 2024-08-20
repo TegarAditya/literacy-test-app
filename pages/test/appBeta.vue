@@ -1,5 +1,7 @@
 <template>
-    <StemContainerApi />
+    <ClientOnly>
+        <StemContainerApi />
+    </ClientOnly>
 </template>
 
 <script lang="ts" setup>
