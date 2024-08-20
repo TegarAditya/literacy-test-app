@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-center items-center w-screen min-h-screen">
-        <div class="rounded-lg overflow-hidden shadow-2xl">
+        <div class="mx-8 rounded-lg overflow-hidden shadow-2xl">
             <div class="card" v-if="responses">
                 <DataTable
                     :value="formattedResponses"
@@ -30,7 +30,7 @@
                         v-for="question in questionCodes"
                         :key="question"
                         :field="question"
-                        :header="`Question ${question}`"
+                        :header="`Q ${question}`"
                     ></Column>
                 </DataTable>
             </div>
@@ -71,7 +71,10 @@ const formattedResponses = computed(() => {
         const formattedResponse: any = { ...response };
 
         response.attributes.userAnswer.data.forEach(answer => {
-            formattedResponse[answer.question_code] = answer.option_code || 'N/A';
+            const optionCode = answer.option_code;
+            formattedResponse[answer.question_code] = optionCode
+                ? optionCode.slice(-1).toUpperCase()
+                : 'X';
         });
 
         return formattedResponse;
@@ -79,7 +82,50 @@ const formattedResponses = computed(() => {
 });
 
 function downloadCSV() {
-    // CSV download logic goes here
+    // Convert the data to CSV format
+    const headers = [
+        'ID',
+        'Waktu Pengumpulan',
+        'Nama',
+        'Umur',
+        'Jenis Kelamin',
+        'Asal Sekolah',
+        'Tipe Sekolah',
+        ...questionCodes.value.map(code => `Q ${code}`),
+    ];
+
+    const csvRows = [
+        headers.join(','), // CSV Header row
+        ...formattedResponses.value.map(response => {
+            return [
+                response.id,
+                response.attributes.createdAt,
+                response.attributes.userData.name,
+                response.attributes.userData.age,
+                response.attributes.userData.gender,
+                response.attributes.userData.school,
+                response.attributes.userData.schoolType,
+                ...questionCodes.value.map(code => response[code]),
+            ].join(',');
+        }),
+    ];
+
+    const csvString = csvRows.join('\n');
+
+    // Create a Blob from the CSV string
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link to trigger the download
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'responses.csv';
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 </script>
 
