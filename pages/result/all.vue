@@ -5,7 +5,7 @@
                 <DataTable
                     :value="formattedResponses"
                     paginator
-                    :rows="5"
+                    :rows="8"
                     :rowsPerPageOptions="[5, 10, 20, 50]"
                     tableStyle="min-width: 50rem"
                     paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
@@ -27,10 +27,11 @@
 
                     <!-- Dynamically generate columns for each question -->
                     <Column
-                        v-for="question in questionCodes"
+                        v-for="question, index in questionCodes"
                         :key="question"
                         :field="question"
                         :header="`Q ${question}`"
+                        :class="index % 2 === 0 ? 'bg-gray-50' : ''"
                     ></Column>
                 </DataTable>
             </div>
@@ -47,7 +48,7 @@ const config = useRuntimeConfig();
 const responses = ref<Responses>();
 
 onMounted(async () => {
-    responses.value = await $fetch(`${config.public.restApiURL}/responses`, {
+    responses.value = await $fetch(`${config.public.restApiURL}/responses?pagination[limit]=500`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
