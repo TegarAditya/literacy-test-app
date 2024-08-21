@@ -12,7 +12,7 @@
                     currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 >
                     <template #paginatorstart>
-                        <Button type="button" icon="pi pi-refresh" text />
+                        <Button type="button" icon="pi pi-refresh" text @click="refresh"/>
                     </template>
                     <template #paginatorend>
                         <Button type="button" icon="pi pi-download" text @click="downloadCSV" />
@@ -51,7 +51,7 @@ onMounted(async () => {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${config.public.apiToken}`,
+            Authorization: `Bearer ${config.public.apiToken}`,
         },
     });
 });
@@ -60,26 +60,34 @@ onMounted(async () => {
 const questionCodes = computed(() => {
     if (!responses.value || !responses.value.data.length) return [];
     const sampleAnswers = responses.value.data[0].attributes.userAnswer.data;
-    return sampleAnswers.map(answer => answer.question_code);
+    return sampleAnswers.map((answer) => answer.question_code);
 });
 
 // Format the responses to include answers with their question codes as keys
 const formattedResponses = computed(() => {
     if (!responses.value) return [];
 
-    return responses.value.data.map(response => {
+    return responses.value.data.map((response) => {
         const formattedResponse: any = { ...response };
 
-        response.attributes.userAnswer.data.forEach(answer => {
+        response.attributes.userAnswer.data.forEach((answer) => {
             const optionCode = answer.option_code;
-            formattedResponse[answer.question_code] = optionCode
-                ? optionCode.slice(-1).toUpperCase()
-                : 'X';
+            formattedResponse[answer.question_code] = optionCode ? optionCode.slice(-1).toUpperCase() : 'X';
         });
 
         return formattedResponse;
     });
 });
+
+async function refresh() {
+    responses.value = await $fetch(`${config.public.restApiURL}/responses`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${config.public.apiToken}`,
+        },
+    });
+}
 
 function downloadCSV() {
     // Convert the data to CSV format
@@ -91,12 +99,12 @@ function downloadCSV() {
         'Jenis Kelamin',
         'Asal Sekolah',
         'Tipe Sekolah',
-        ...questionCodes.value.map(code => `Q ${code}`),
+        ...questionCodes.value.map((code) => `Q ${code}`),
     ];
 
     const csvRows = [
         headers.join(','), // CSV Header row
-        ...formattedResponses.value.map(response => {
+        ...formattedResponses.value.map((response) => {
             return [
                 response.id,
                 response.attributes.createdAt,
@@ -105,7 +113,7 @@ function downloadCSV() {
                 response.attributes.userData.gender,
                 response.attributes.userData.school,
                 response.attributes.userData.schoolType,
-                ...questionCodes.value.map(code => response[code]),
+                ...questionCodes.value.map((code) => response[code]),
             ].join(',');
         }),
     ];
