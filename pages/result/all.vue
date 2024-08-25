@@ -75,7 +75,7 @@ function sortQuestionCodes(a: string, b: string): number {
 // Extract question codes dynamically
 const questionCodes = computed(() => {
     if (!responses.value || !responses.value.data.length) return [];
-    const sampleAnswers = responses.value.data[0].attributes.userAnswer.data;
+    const sampleAnswers = responses.value?.data?.at(-1)?.attributes?.userAnswer?.data || [];
     return sampleAnswers.map((answer) => answer.question_code).sort(sortQuestionCodes);
 });
 
