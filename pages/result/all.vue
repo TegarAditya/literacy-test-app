@@ -6,13 +6,13 @@
                     :value="formattedResponses"
                     paginator
                     :rows="8"
-                    :rowsPerPageOptions="[5, 10, 20, 50]"
+                    :rowsPerPageOptions="[5, 8, 10, 20, 50]"
                     tableStyle="min-width: 50rem"
                     paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                     currentPageReportTemplate="{first} to {last} of {totalRecords}"
                 >
                     <template #paginatorstart>
-                        <Button type="button" icon="pi pi-refresh" text @click="refresh"/>
+                        <Button type="button" icon="pi pi-refresh" text @click="refresh" />
                     </template>
                     <template #paginatorend>
                         <Button type="button" icon="pi pi-download" text @click="downloadCSV" />
@@ -27,7 +27,7 @@
 
                     <!-- Dynamically generate columns for each question -->
                     <Column
-                        v-for="question, index in questionCodes"
+                        v-for="(question, index) in questionCodes"
                         :key="question"
                         :field="question"
                         :header="`Q ${question}`"
@@ -57,11 +57,26 @@ onMounted(async () => {
     });
 });
 
+// Custom sorting function to sort question codes numerically
+function sortQuestionCodes(a: string, b: string): number {
+    const splitA = a.split('.').map(Number);
+    const splitB = b.split('.').map(Number);
+
+    for (let i = 0; i < Math.max(splitA.length, splitB.length); i++) {
+        const numA = splitA[i] || 0;
+        const numB = splitB[i] || 0;
+        if (numA !== numB) {
+            return numA - numB;
+        }
+    }
+    return 0;
+}
+
 // Extract question codes dynamically
 const questionCodes = computed(() => {
     if (!responses.value || !responses.value.data.length) return [];
     const sampleAnswers = responses.value.data[0].attributes.userAnswer.data;
-    return sampleAnswers.map((answer) => answer.question_code);
+    return sampleAnswers.map((answer) => answer.question_code).sort(sortQuestionCodes);
 });
 
 // Format the responses to include answers with their question codes as keys
