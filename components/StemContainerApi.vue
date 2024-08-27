@@ -276,18 +276,22 @@ const confirm = useConfirm();
 const enableSubmit = ref(false);
 
 watch(time, (time) => {
-    //@ts-ignore
-    if (timeStringToSeconds(time) == timeStringToSeconds('00:00:00')) {
-        if (localStorage.getItem('isFinish') === null) {
-            submitAnswers();
-        } else {
-            router.push('/result/beta');
-        }
-    }
+    if (typeof time === 'string') {
+        const timeInSeconds = timeStringToSeconds(time);
 
-    //@ts-ignore
-    if (timeStringToSeconds(time) <= timeStringToSeconds('00:05:00')) {
-        enableSubmit.value = true;
+        if (timeInSeconds === timeStringToSeconds('00:00:00')) {
+            if (localStorage.getItem('isFinish') === null) {
+                submitAnswers();
+            } else {
+                router.push('/result/beta');
+            }
+        }
+
+        if (timeInSeconds <= timeStringToSeconds('00:05:00')) {
+            enableSubmit.value = true;
+        }
+    } else {
+        console.error('Unexpected type for time:', typeof time);
     }
 });
 
@@ -543,11 +547,14 @@ const confirmSubmit = () => {
 async function submitAnswers() {
     isSubmitting.value = true;
 
+    enableSubmit.value = false;
+
     let maxRetries = 10;
     let attempts = 0;
     let retryDelay = 5000;
 
     const formData = await JSON.parse(localStorage.getItem('formData') ?? '');
+    const sessionData = await JSON.parse(localStorage.getItem('sessionData') ?? '');
     const userAnswer = await JSON.parse(localStorage.getItem('answers') ?? '');
 
     const name = await formData.username;
@@ -566,6 +573,7 @@ async function submitAnswers() {
 
     const data = {
         userData,
+        sessionData,
         userAnswer,
     };
 
