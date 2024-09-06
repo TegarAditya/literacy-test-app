@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@chenfengyuan/vue-countdown": "2",
@@ -22,12 +24,19 @@
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
+    "@nuxt/eslint": "^0.5.3",
     "@nuxtjs/apollo": "^5.0.0-alpha.14",
     "@tailwindcss/typography": "^0.5.13",
+    "@types/eslint": "^9",
     "@vueuse/core": "^10.11.0",
     "@vueuse/nuxt": "^10.11.0",
+    "eslint": "^9.9.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "nuxt-primevue": "^3.0.0",
-    "sass": "^1.77.4"
+    "prettier": "^3.3.3",
+    "sass": "^1.77.4",
+    "typescript": "^5.5.4"
   },
   "packageManager": "yarn@4.3.0"
 }

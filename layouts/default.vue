@@ -18,11 +18,27 @@ const isOnline = useOnline();
 const isLoading = ref(true);
 const local = (key: string) => localStorage.getItem(key);
 
-onMounted(async () => {
+const isUserDataValid = () => {
     const formData: UserData = JSON.parse(local('formData') ?? '');
 
-    console.log(formData)
+    return (
+        formData.name !== '' &&
+        formData.age !== '' &&
+        formData.gender !== '' &&
+        formData.school !== '' &&
+        formData.schoolType !== ''
+    );
+};
 
+onMounted(async () => {
     isLoading.value = false;
+
+    if (local('formData') === null || local('formData') === undefined || !isUserDataValid()) {
+        navigateTo('/');
+    } else if (local('sessionData') === null || local('sessionData') === undefined) {
+        navigateTo('/otp');
+    } else if (local('isFinish') === 'true') {
+        navigateTo('/result/beta');
+    }
 });
 </script>

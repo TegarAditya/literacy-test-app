@@ -9,6 +9,7 @@ import { isClient } from '@vueuse/core';
 import type { Session } from '~/types/session';
 
 const countdown = useState('remaining_time');
+const _time = useState('duration', () => getDuration());
 
 let interval: ReturnType<typeof setInterval>;
 

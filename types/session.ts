@@ -5,10 +5,10 @@ export interface Sessions {
 
 export interface Session {
     id:         number;
-    attributes: Attributes;
+    attributes: SessionAttributes;
 }
 
-export interface Attributes {
+export interface SessionAttributes {
     name:        string;
     token:       string;
     end:         Date;

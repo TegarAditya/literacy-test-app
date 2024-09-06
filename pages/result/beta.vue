@@ -32,12 +32,6 @@ const incorrectCount = ref(0);
 
 let answers: any[] = [];
 onMounted(async () => {
-    if (isClient) {
-        if (!localStorage.getItem('isFinish')) {
-            await navigateTo('/test/appBeta');
-        }
-    }
-
     const storedAnswers = localStorage.getItem('answers');
     const answersObject = storedAnswers ? JSON.parse(storedAnswers) : {};
     if (answersObject) {

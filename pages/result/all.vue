@@ -18,11 +18,13 @@
                         <Button type="button" icon="pi pi-download" text @click="downloadCSV" />
                     </template>
                     <Column field="id" header="ID"></Column>
+                    <Column field="attributes.sessionData.attributes.name" header="Sesi" class="min-w-48"></Column>
+                    <Column field="attributes.sessionData.attributes.duration" header="Durasi (menit)"></Column>
                     <Column field="attributes.createdAt" header="Waktu Pengumpulan"></Column>
-                    <Column field="attributes.userData.name" header="Nama"></Column>
+                    <Column field="attributes.userData.name" header="Nama" class="min-w-56"</Column>
                     <Column field="attributes.userData.age" header="Umur"></Column>
                     <Column field="attributes.userData.gender" header="Jenis Kelamin"></Column>
-                    <Column field="attributes.userData.school" header="Asal Sekolah"></Column>
+                    <Column field="attributes.userData.school" header="Asal Sekolah" class="min-w-48"></Column>
                     <Column field="attributes.userData.schoolType" header="Tipe Sekolah"></Column>
 
                     <!-- Dynamically generate columns for each question -->
@@ -42,6 +44,10 @@
 <script lang="ts" setup>
 import type { Responses } from '~/types/response';
 import { ref, computed } from 'vue';
+
+definePageMeta({
+    layout: 'admin',
+})
 
 const config = useRuntimeConfig();
 
@@ -109,6 +115,8 @@ function downloadCSV() {
     // Convert the data to CSV format
     const headers = [
         'ID',
+        'Sesi',
+        'Durasi (menit)',
         'Waktu Pengumpulan',
         'Nama',
         'Umur',
@@ -123,6 +131,8 @@ function downloadCSV() {
         ...formattedResponses.value.map((response) => {
             return [
                 response.id,
+                response.attributes.sessionData?.attributes.name ?? '-',
+                response.attributes.sessionData?.attributes.duration ?? '-',
                 response.attributes.createdAt,
                 response.attributes.userData.name,
                 response.attributes.userData.age,

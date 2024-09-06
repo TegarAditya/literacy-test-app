@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/apollo",
     "@vueuse/nuxt",
+    "@nuxt/eslint"
   ],
   primevue: {
     options: {

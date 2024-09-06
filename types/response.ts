@@ -11,6 +11,7 @@ export interface Response {
 export interface Attributes {
     userData:    UserData;
     userAnswer:  UserAnswers;
+    sessionData: SessionData;
     createdAt:   Date;
     updatedAt:   Date;
     publishedAt: Date;
@@ -25,6 +26,23 @@ export interface UserAnswer {
     isNotSure:     boolean;
     option_code:   null | string;
     question_code: string;
+}
+
+export interface SessionData {
+    id:         number;
+    attributes: SessionDataAttributes;
+}
+
+export interface SessionDataAttributes {
+    end:         Date;
+    name:        string;
+    start:       Date;
+    token:       string;
+    duration:    number;
+    createdAt:   Date;
+    threshold:   null;
+    updatedAt:   Date;
+    publishedAt: Date;
 }
 
 export interface UserData {

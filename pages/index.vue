@@ -14,6 +14,7 @@
                                 :placeholder="step.placeholder"
                                 :aria-describedby="`${step.id}-help`"
                                 :type="step.type"
+                                :required="step.required"
                                 class="w-72"
                             />
                             <Dropdown
@@ -24,6 +25,7 @@
                                 optionLabel="name"
                                 :placeholder="step.placeholder"
                                 :aria-describedby="`${step.id}-help`"
+                                :required="step.required"
                                 class="w-72"
                             />
                         </div>
@@ -63,6 +65,7 @@ interface Step {
     id: string;
     type: string;
     mode: string;
+    required?: boolean;
     options?: any[];
 }
 
@@ -103,6 +106,7 @@ const steps: Step[] = [
         id: 'username',
         type: 'text',
         mode: 'text',
+        required: true,
     },
     {
         label: 'Asal Sekolah',
@@ -112,6 +116,7 @@ const steps: Step[] = [
         id: 'school',
         type: 'text',
         mode: 'text',
+        required: true,
     },
     {
         label: 'Jenis Sekolah',
@@ -122,6 +127,7 @@ const steps: Step[] = [
         type: 'select',
         mode: 'select',
         options: schoolTypeOptions,
+        required: true,
     },
     {
         label: 'Usia (tahun)',
@@ -131,6 +137,7 @@ const steps: Step[] = [
         id: 'age',
         type: 'number',
         mode: 'text',
+        required: true,
     },
     {
         label: 'Jenis Kelamin',
@@ -141,6 +148,7 @@ const steps: Step[] = [
         type: 'select',
         mode: 'select',
         options: genderOptions,
+        required: true,
     },
 ];
 
