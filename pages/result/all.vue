@@ -54,7 +54,7 @@ const config = useRuntimeConfig();
 const responses = ref<Responses>();
 
 onMounted(async () => {
-    responses.value = await $fetch(`${config.public.restApiURL}/responses?pagination[limit]=500`, {
+    responses.value = await $fetch(`${config.public.restApiURL}/responses?pagination[limit]=5000`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

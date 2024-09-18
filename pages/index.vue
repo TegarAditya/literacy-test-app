@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col items-center justify-center w-screen h-screen dark:bg-gray-900">
+    <div class="flex flex-col items-center justify-center w-screen min-h-[100dvh] py-5 dark:bg-gray-900">
         <div class="flex items-center space-x-2 justify-center">
             <form action="" @submit.prevent="submitForm">
                 <div class="flex flex-col gap-2 dark:text-white">
